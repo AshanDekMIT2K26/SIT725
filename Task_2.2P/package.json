@@ -1,0 +1,14 @@
+{
+  "name": "task_2.2p",
+  "version": "1.0.0",
+  "description": "Task 2.1P",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Ashan Indika",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^5.1.0"
+  }
+}

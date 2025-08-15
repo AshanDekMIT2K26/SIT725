@@ -1,0 +1,355 @@
+body {
+    background-color: #f5f5f5;
+    transition: background-color 0.3s ease, color 0.3s ease;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+nav {
+    box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
+}
+
+.main-body {
+    flex: 1; /* Allows main content to take up available space */
+    padding: 20px 0;
+}
+
+/* Hero Section - Now always visible and contains map/stations */
+.hero-section {
+    background-color: #009688; /* Teal */
+    color: white;
+    padding: 80px 0 30px; 
+    text-align: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin-bottom: 30px;
+}
+
+.hero-section h1 {
+    font-size: 3.5rem;
+    font-weight: 300;
+    margin-bottom: 20px;
+}
+
+.hero-section p {
+    font-size: 1.2rem;
+    max-width: 700px;
+    margin: 0 auto 40px;
+    line-height: 1.6;
+}
+
+/* Search Bar in Hero */
+.search-bar-container {
+    margin-top: 10px; 
+    position: relative;
+    z-index: 10; /* Ensure it's above other elements */
+    margin-bottom: 40px; /* Space below search */
+}
+
+.search-card {
+    border-radius: 10px;
+    padding: 10px 20px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    position: relative; /* For dropdown positioning */
+    max-width: 450px; 
+    margin: 0 auto; 
+}
+
+.search-card .input-field {
+    margin-bottom: 0; /* Remove default margin */
+}
+
+.search-card .input-field input {
+    border-bottom: 1px solid #ccc;
+    box-shadow: none;
+    padding-left: 3rem; /* Space for icon */
+}
+
+.search-card .input-field input:focus {
+    border-bottom: 1px solid #009688 !important; /* Teal focus */
+    box-shadow: 0 1px 0 0 #009688 !important; /* Teal focus */
+}
+
+.search-card .input-field label.active {
+    color: #009688 !important;
+}
+
+.voice-search-btn {
+    position: absolute;
+    right: 25px;
+    top: 50%; /* Center vertically */
+    transform: translateY(-50%);
+    z-index: 11;
+}
+
+/* Search Results Dropdown */
+.search-dropdown {
+    position: absolute;
+    top: 100%; /* Position right below the search card */
+    left: 0;
+    width: 100%;
+    max-height: 200px;
+    overflow-y: auto;
+    background-color: white;
+    border: 1px solid #e0e0e0;
+    border-radius: 0 0 8px 8px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    z-index: 10;
+}
+
+.search-dropdown .collection-item {
+    cursor: pointer;
+    padding: 10px 20px;
+}
+
+.search-dropdown .collection-item:hover {
+    background-color: #f0f0f0;
+}
+
+
+/* Dashboard Sections - Now for logged-in specific content */
+.dashboard-section {
+    padding: 20px 0;
+    margin-top: 30px;
+}
+
+.user-info {
+    margin-bottom: 30px;
+    padding: 15px;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.user-info h5, .user-info p {
+    margin: 0;
+}
+
+/* Profile Image */
+.profile-img {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    margin-bottom: 15px;
+    border: 3px solid #009688; /* Teal border */
+}
+
+
+/* Map Container */
+.map-section {
+    margin-top: 30px;
+}
+
+.map-container {
+    height: 450px; 
+    background-color: #e0e0e0;
+    border: 1px solid #ccc;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    position: relative;
+    overflow: hidden; /* Ensure pins stay within bounds */
+    /* Updated to a generic map image URL */
+    background-image: url('https://placehold.co/800x450/cccccc/333333/png?text=Map+of+Melbourne'); 
+    background-size: cover;
+    background-position: center;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.map-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.1); 
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1; 
+}
+
+/* Station Pins  */
+.station-pin {
+    position: absolute;
+    width: 30px;
+    height: 30px;
+    background-color: #f44336; /* Red pin */
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 18px;
+    cursor: pointer;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+    border: 2px solid white;
+    transform: translate(-50%, -50%); /* Center pin on its coordinates */
+    transition: transform 0.2s ease, background-color 0.2s ease, opacity 0.5s ease; /* Added opacity for fade-in */
+    opacity: 0; /* Start hidden for animation */
+    animation: fadeIn 1s forwards; /* Animation for pins */
+}
+
+.station-pin:hover {
+    transform: translate(-50%, -50%) scale(1.1);
+    background-color: #d32f2f;
+}
+
+.station-pin .material-icons {
+    font-size: 18px;
+    line-height: 1; /* Adjust icon vertical alignment */
+}
+
+/* Station List Cards*/
+.station-list {
+    margin-top: 40px;
+}
+
+.station-card-item {
+    margin-bottom: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    opacity: 0; /* Start hidden for animation */
+    animation: slideInUp 0.8s forwards; /* Animation for cards */
+    animation-delay: var(--animation-delay); /* Use CSS variable for delay */
+}
+
+.station-card-item .card-content h6 {
+    font-weight: 500;
+}
+
+/* Ensure card images are clearly visible */
+.station-card-item .card-image img {
+    height: 200px; 
+    object-fit: cover; 
+}
+
+.station-card-item .card-action a {
+    color: #009688 !important; 
+    font-weight: 500;
+}
+
+/* Payment Modal */
+#paymentModal .modal-content {
+    padding: 30px;
+}
+
+#paymentModal .payment-options-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); /* Responsive grid */
+    gap: 20px;
+    margin-top: 30px;
+    margin-bottom: 30px;
+}
+
+#paymentModal .payment-option {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    height: 120px; /* Fixed height for consistent grid */
+}
+
+#paymentModal .payment-option:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+#paymentModal .payment-option i.material-icons {
+    font-size: 3rem;
+    margin-bottom: 10px;
+    color: #009688; /* Teal icons */
+}
+
+#paymentModal .payment-option p {
+    font-weight: 500;
+    margin: 0;
+    color: #333;
+}
+
+/* Dark Mode styles */
+body.dark-mode {
+    background-color: #121212;
+    color: #e0e0e0;
+}
+
+body.dark-mode nav.teal.lighten-1 {
+    background-color: #004d40 !important; /* Darker teal for nav */
+}
+
+body.dark-mode .hero-section {
+    background-color: #004d40 !important; /* Darker teal for hero */
+}
+
+body.dark-mode .search-card,
+body.dark-mode .user-info,
+body.dark-mode .collection-item,
+body.dark-mode .card-panel,
+body.dark-mode .station-card-item {
+    background-color: #424242 !important; /* Dark grey for cards/panels */
+    color: #e0e0e0;
+}
+
+body.dark-mode .search-card .input-field input,
+body.dark-mode .input-field label,
+body.dark-mode .card-panel h6,
+body.dark-mode .collection-item,
+body.dark-mode .map-container p,
+body.dark-mode .station-card-item .card-title,
+body.dark-mode .station-card-item p {
+    color: #e0e0e0 !important;
+}
+
+body.dark-mode .search-card .input-field input:focus {
+    border-bottom: 1px solid #26a69a !important; /* Lighter teal for focus */
+    box-shadow: 0 1px 0 0 #26a69a !important;
+}
+
+body.dark-mode .map-container {
+    background-image: url('https://placehold.co/800x450/424242/bdbdbd?text=Map+of+Melbourne'); /* Dark mode map placeholder */
+    border-color: #616161;
+}
+
+body.dark-mode .payment-option {
+    background-color: #616161 !important; /* Darker grey for payment options */
+    color: #e0e0e0 !important;
+}
+
+body.dark-mode .payment-option i.material-icons {
+    color: #26a69a; /* Lighter teal for icons */
+}
+
+body.dark-mode .payment-option p {
+    color: #e0e0e0;
+}
+
+body.dark-mode .modal {
+    background-color: #333333; /* Dark background for modals */
+    color: #e0e0e0;
+}
+
+body.dark-mode .modal h4 {
+    color: #e0e0e0;
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes slideInUp {
+    from {
+        transform: translateY(20px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}

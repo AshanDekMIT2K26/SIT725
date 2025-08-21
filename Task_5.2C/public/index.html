@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Locate a Socket - EV Charging App</title>
+    <meta name="description" content="A GPS-enabled web platform to locate EV charging stations and manage payments.">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+
+<body>
+    <nav class="teal lighten-1">
+        <div class="nav-wrapper container">
+            <a href="#" class="brand-logo">Locate a Socket</a>
+            <ul id="nav-mobile" class="right hide-on-med-and-down">
+                <li><a href="#" id="darkModeToggle">Dark Mode</a></li>
+                <li><a href="#" id="loginBtn" class="modal-trigger" data-target="loginModal">Login</a></li>
+                <li><a href="#" id="logoutBtn" style="display:none;">Logout</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <main class="main-body container">
+        <!-- Always visible and contains map/stations -->
+        <div id="heroSection" class="hero-section center-align">
+            <h1 class="white-text">Find Your Next Charge</h1>
+            <p class="flow-text white-text">Locate nearby charging stations in real-time, view details, and make secure payments.</p>
+            <div class="row search-bar-container">
+                <div class="col s12 m8 offset-m2">
+                    <div class="card search-card">
+                        <div class="card-content">
+                            <div class="input-field">
+                                <i class="material-icons prefix">search</i>
+                                <input id="search-input" type="text" placeholder="Search for a location or station...">
+                                <label for="search-input">Search Stations</label>
+                            </div>
+                            <a class="btn-floating btn-large waves-effect waves-light teal voice-search-btn" id="voiceSearchBtn">
+                                <i class="material-icons">mic</i>
+                            </a>
+                            <!-- Search results dropdown -->
+                            <div id="search-results-dropdown" class="collection search-dropdown" style="display:none;">
+                                <!-- Search results will be populated here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Map Section - Now part of the initial view -->
+            <div class="row map-section">
+                <div class="col s12 map-container" id="mapContainer">
+                    <!-- Map will be rendered here by JS -->
+                    <div class="map-overlay">
+                        <p class="center-align grey-text text-darken-1">Simulated Map View with Station Pins</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Station List - Now part of the initial view -->
+            <div class="row station-list" id="stationList">
+                <h5 class="center-align grey-text text-darken-1 col s12">Nearby Charging Stations:</h5>
+                <!-- Station cards will be dynamically added here -->
+            </div>
+        </div>
+
+        <!-- EV Driver Dashboard - Optional content for logged-in driver -->
+        <div id="driverDashboard" class="dashboard-section" style="display:none;">
+            <div class="row user-info">
+                <div class="col s12">
+                    <h5>Welcome back, <span id="driverName">EV Driver</span>!</h5>
+                    <p>Your Recent Activity:</p>
+                    <ul class="collection">
+                        <li class="collection-item">Last Charge: City Center Chargers (2 hours ago)</li>
+                        <li class="collection-item">Favorite Station: Suburb Mall Station</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col s12">
+                    <p class="flow-text">This section could show personalized routes, charge history, etc.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Admin Dashboard -->
+        <div id="adminDashboard" class="dashboard-section" style="display:none;">
+            <div class="row user-info">
+                <div class="col s12">
+                    <h5>Welcome, <span id="adminName">Admin User</span>!</h5>
+                    <p>Role: Administrator</p>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col s12">
+                    <div class="card-panel grey lighten-4">
+                        <h6 class="teal-text">Usage Analytics Overview</h6>
+                        <p>Total Stations: 150</p>
+                        <p>Active Charging Sessions: 25</p>
+                        <p>Revenue Today: $1,250</p>
+                        <p>User Registrations: 5 new users today</p>
+                        <p class="flow-text">Detailed analytics dashboard coming soon as per NFR3...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Station Operator Dashboard -->
+        <div id="operatorDashboard" class="dashboard-section" style="display:none;">
+            <div class="row user-info">
+                <div class="col s12">
+                    <h5>Welcome, <span id="operatorName">Station Operator</span>!</h5>
+                    <p>Role: Operator</p>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col s12">
+                    <div class="card-panel grey lighten-4">
+                        <h6 class="teal-text">Manage Your Stations</h6>
+                        <ul class="collection with-header">
+                            <li class="collection-header"><h6>My Stations</h6></li>
+                            <li class="collection-item">Station A - <span class="new badge red" data-badge-caption="Offline"></span>
+                                <a href="#!" class="secondary-content"><i class="material-icons">edit</i></a></li>
+                            <li class="collection-item">Station B - <span class="new badge green" data-badge-caption="Online"></span>
+                                <a href="#!" class="secondary-content"><i class="material-icons">edit</i></a></li>
+                            <li class="collection-item">Station C - <span class="new badge green" data-badge-caption="Online"></span>
+                                <a href="#!" class="secondary-content"><i class="material-icons">edit</i></a></li>
+                        </ul>
+                        <p class="flow-text">Set Dynamic Pricing and manage listings coming soon!</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Login Modal Structure -->
+    <div id="loginModal" class="modal">
+        <div class="modal-content center-align">
+            <h4>Login to Locate a Socket</h4>
+            <div class="row">
+                <div class="input-field col s12">
+                    <input id="username" type="text" class="validate">
+                    <label for="username">Username (e.g., driver, admin, operator)</label>
+                </div>
+            </div>
+            <div class="row">
+                <div class="input-field col s12">
+                    <input id="password" type="password" class="validate">
+                    <label for="password">Password</label>
+                </div>
+            </div>
+            <button class="btn waves-effect waves-light teal" id="loginSubmitBtn">Login</button>
+        </div>
+    </div>
+
+    <!-- Payment Modal Structure -->
+    <div id="paymentModal" class="modal">
+        <div class="modal-content center-align">
+            <h4>Complete Your Payment</h4>
+            <p class="flow-text">Amount: $<span id="paymentAmount">0.00</span></p>
+            <p>Reference: <span id="paymentRef">N/A</span></p>
+
+            <div class="payment-options-grid">
+                <div class="payment-option card waves-effect waves-light" id="applePayBtn">
+                    <i class="material-icons">apple</i> <!-- Placeholder for Apple Pay icon -->
+                    <p>Apple Pay</p>
+                </div>
+                <div class="payment-option card waves-effect waves-light" id="googlePayBtn">
+                    <i class="material-icons">android</i> <!-- Placeholder for Google Pay icon -->
+                    <p>Google Pay</p>
+                </div>
+                <div class="payment-option card waves-effect waves-light" id="paypalBtn">
+                    <i class="material-icons">account_balance_wallet</i> <!-- Placeholder for PayPal icon -->
+                    <p>PayPal</p>
+                </div>
+                <div class="payment-option card waves-effect waves-light" id="nfcPayBtn">
+                    <i class="material-icons">nfc</i>
+                    <p>Tap to Pay (NFC)</p>
+                </div>
+            </div>
+            <button class="modal-close btn waves-effect waves-light red lighten-1">Cancel</button>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"
+        integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    <script src="js/scripts.js"></script>
+</body>
+
+</html>

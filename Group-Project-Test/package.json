@@ -1,0 +1,25 @@
+{
+  "name": "myems-energy-management-system",
+  "version": "1.0.0",
+  "description": "A web-based Energy Management System using MVC architecture",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js",
+    "init-db": "node scripts/initDB.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Ashan Indika Wijayarathne Hewayalage",
+  "license": "ISC",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "express": "^5.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.18.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.7"
+  }
+}

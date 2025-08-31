@@ -1,105 +1,84 @@
+import ApiService from '../services/ApiService.js';
+import Device from '../models/Device.js';
+
 class DeviceController {
     constructor() {
         this.view = new DevicesView();
     }
     
-    loadDevices() {
-        // Simulate API call to get devices
-        setTimeout(() => {
-            const devices = this.getDevices();
+    async loadDevices() {
+        try {
+            const devices = await ApiService.getDevices();
             this.view.displayDevices(devices);
             
-            // Add event listeners to action buttons
-            document.querySelectorAll('[data-action="edit"]').forEach(button => {
-                button.addEventListener('click', (e) => {
-                    const deviceId = e.target.getAttribute('data-id');
-                    this.editDevice(deviceId);
-                });
-            });
-            
-            document.querySelectorAll('[data-action="delete"]').forEach(button => {
-                button.addEventListener('click', (e) => {
-                    const deviceId = e.target.getAttribute('data-id');
-                    this.deleteDevice(deviceId);
-                });
-            });
-        }, 500);
+            // Add event listeners
+            this.addEventListeners();
+        } catch (error) {
+            console.error('Error loading devices:', error);
+            alert('Failed to load devices');
+        }
     }
     
-    getDevices() {
-        // Return simulated devices
-        return [
-            new Device({
-                id: 1,
-                name: 'Living Room Lights',
-                type: 'lighting',
-                powerRating: 100,
-                energyConsumption: 5.2,
-                status: 'active',
-                lastActive: new Date(),
-                location: 'Living Room'
-            }),
-            new Device({
-                id: 2,
-                name: 'Kitchen HVAC',
-                type: 'heating',
-                powerRating: 1500,
-                energyConsumption: 28.3,
-                status: 'active',
-                lastActive: new Date(),
-                location: 'Kitchen'
-            }),
-            new Device({
-                id: 3,
-                name: 'Office Computer',
-                type: 'electronics',
-                powerRating: 300,
-                energyConsumption: 3.7,
-                status: 'inactive',
-                lastActive: new Date(Date.now() - 86400000), // 1 day ago
-                location: 'Office'
-            })
-        ];
+    addEventListeners() {
+        document.querySelectorAll('[data-action="edit"]').forEach(button => {
+            button.addEventListener('click', (e) => {
+                const deviceId = e.target.getAttribute('data-id');
+                this.editDevice(deviceId);
+            });
+        });
+        
+        document.querySelectorAll('[data-action="delete"]').forEach(button => {
+            button.addEventListener('click', (e) => {
+                const deviceId = e.target.getAttribute('data-id');
+                this.deleteDevice(deviceId);
+            });
+        });
     }
     
-    addDevice(deviceData) {
-        // Simulate API call to add device
-        setTimeout(() => {
-            const newDevice = new Device({
-                name: deviceData.name,
-                type: deviceData.type,
-                powerRating: parseInt(deviceData.powerRating),
-                energyConsumption: 0,
-                status: 'inactive',
-                location: deviceData.location
-            });
-            
-            // Close the modal
+    async addDevice(deviceData) {
+        try {
+            await ApiService.addDevice(deviceData);
             document.getElementById('add-device-modal').remove();
-            
-            // Reload devices
             this.loadDevices();
-            
-            // Show success message
-            alert(`Device "${newDevice.name}" added successfully!`);
-        }, 500);
+            alert('Device added successfully!');
+        } catch (error) {
+            console.error('Error adding device:', error);
+            alert('Failed to add device: ' + error.message);
+        }
     }
     
-    editDevice(deviceId) {
-        // Implementation for editing a device
-        alert(`Edit device with ID: ${deviceId}`);
+    async editDevice(deviceId) {
+        try {
+            const device = await ApiService.getDevice(deviceId);
+            this.view.showEditDeviceForm(device);
+        } catch (error) {
+            console.error('Error loading device:', error);
+            alert('Failed to load device details');
+        }
     }
     
-    deleteDevice(deviceId) {
+    async updateDevice(deviceData) {
+        try {
+            await ApiService.updateDevice(deviceData.id, deviceData);
+            document.getElementById('edit-device-modal').remove();
+            this.loadDevices();
+            alert('Device updated successfully!');
+        } catch (error) {
+            console.error('Error updating device:', error);
+            alert('Failed to update device: ' + error.message);
+        }
+    }
+    
+    async deleteDevice(deviceId) {
         if (confirm('Are you sure you want to delete this device?')) {
-            // Simulate API call to delete device
-            setTimeout(() => {
-                // Reload devices
+            try {
+                await ApiService.deleteDevice(deviceId);
                 this.loadDevices();
-                
-                // Show success message
                 alert('Device deleted successfully!');
-            }, 500);
+            } catch (error) {
+                console.error('Error deleting device:', error);
+                alert('Failed to delete device: ' + error.message);
+            }
         }
     }
     
@@ -107,3 +86,5 @@ class DeviceController {
         this.view.showAddDeviceForm();
     }
 }
+
+// export default DeviceController;

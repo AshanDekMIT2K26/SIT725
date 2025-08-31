@@ -65,3 +65,5 @@ class ReportController {
         return data;
     }
 }
+
+// export default ReportController;

@@ -54,3 +54,5 @@ class DashboardView {
         }
     }
 }
+
+// export default DashboardView;

@@ -1,51 +1,57 @@
+import ApiService from '../services/ApiService.js';
+import User from '../models/User.js';
+
 class AuthController {
     constructor() {
         this.view = new LoginView();
     }
     
-    login(username, password) {
+    async login(username, password) {
         this.view.setLoading(true);
         
-        // Simulate API call
-        setTimeout(() => {
-            if (username === 'admin' && password === 'password') {
-                const userData = {
-                    id: 1,
-                    username: 'admin',
-                    name: 'Administrator',
-                    email: 'admin@myems.com',
-                    role: 'admin'
-                };
-                
-                const user = new User(userData);
-                StorageService.set('user', user);
-                window.myEMSApp.user = user;
-                window.myEMSApp.showView('dashboard');
-                window.myEMSApp.updateUserInfo();
-                this.view.clearForm();
-            } else {
-                this.view.showMessage('Invalid username or password', 'error');
-            }
+        try {
+            const response = await ApiService.login({ username, password });
             
+            localStorage.setItem('token', response.token);
+            localStorage.setItem('user', JSON.stringify(response));
+            
+            window.myEMSApp.user = new User(response);
+            window.myEMSApp.showView('dashboard');
+            window.myEMSApp.updateUserInfo();
+            this.view.clearForm();
+            
+        } catch (error) {
+            this.view.showMessage(error.message || 'Invalid username or password', 'error');
+        } finally {
             this.view.setLoading(false);
-        }, 1000);
+        }
     }
     
     logout() {
-        StorageService.remove('user');
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
         window.myEMSApp.user = null;
         window.myEMSApp.showView('login');
     }
     
-    updateProfile(profileData) {
-        if (window.myEMSApp.user) {
-            window.myEMSApp.user.name = profileData.name;
-            window.myEMSApp.user.email = profileData.email;
-            StorageService.set('user', window.myEMSApp.user);
+    async updateProfile(profileData) {
+        try {
+            const updatedUser = await ApiService.updateProfile(profileData);
+            
+            const user = JSON.parse(localStorage.getItem('user'));
+            const updatedUserData = { ...user, ...updatedUser };
+            localStorage.setItem('user', JSON.stringify(updatedUserData));
+            
+            window.myEMSApp.user = new User(updatedUserData);
             window.myEMSApp.updateUserInfo();
             
-            // Show success message
             alert('Profile updated successfully!');
+            return true;
+        } catch (error) {
+            alert('Error updating profile: ' + error.message);
+            return false;
         }
     }
 }
+
+// export default AuthController;

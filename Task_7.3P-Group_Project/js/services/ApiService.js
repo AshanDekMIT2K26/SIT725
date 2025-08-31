@@ -1,21 +1,37 @@
 class ApiService {
-    static baseUrl = 'https://api.myems.com/v1';
+    static baseUrl = '/api';
     
     static async request(endpoint, options = {}) {
         const url = `${this.baseUrl}${endpoint}`;
+        const token = localStorage.getItem('token');
+        
         const defaultOptions = {
             headers: {
                 'Content-Type': 'application/json',
+                ...(token && { 'Authorization': `Bearer ${token}` })
             },
         };
         
         const config = { ...defaultOptions, ...options };
         
+        if (config.body) {
+            config.body = JSON.stringify(config.body);
+        }
+        
         try {
             const response = await fetch(url, config);
             
+            if (response.status === 401) {
+                // Token expired or invalid
+                localStorage.removeItem('token');
+                localStorage.removeItem('user');
+                window.location.href = '/';
+                return;
+            }
+            
             if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
+                const errorData = await response.json().catch(() => ({}));
+                throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
             }
             
             return await response.json();
@@ -25,74 +41,104 @@ class ApiService {
         }
     }
     
-    static async get(endpoint) {
-        return this.request(endpoint);
-    }
-    
-    static async post(endpoint, data) {
-        return this.request(endpoint, {
+    // Auth methods
+    static async login(credentials) {
+        return this.request('/auth/login', {
             method: 'POST',
-            body: JSON.stringify(data),
+            body: credentials
         });
     }
     
-    static async put(endpoint, data) {
-        return this.request(endpoint, {
+    static async getProfile() {
+        return this.request('/auth/profile');
+    }
+    
+    static async updateProfile(profileData) {
+        return this.request('/auth/profile', {
             method: 'PUT',
-            body: JSON.stringify(data),
-        });
-    }
-    
-    static async delete(endpoint) {
-        return this.request(endpoint, {
-            method: 'DELETE',
+            body: profileData
         });
     }
     
     // Energy data methods
-    static async getEnergyData(startDate, endDate) {
-        const endpoint = `/energy?start=${startDate.toISOString()}&end=${endDate.toISOString()}`;
-        return this.get(endpoint);
+    static async getEnergyData(params = {}) {
+        const queryString = new URLSearchParams(params).toString();
+        return this.request(`/energy?${queryString}`);
     }
     
-    static async getDeviceEnergy(deviceId, period) {
-        const endpoint = `/devices/${deviceId}/energy?period=${period}`;
-        return this.get(endpoint);
+    static async getEnergyStats(period = 'day') {
+        return this.request(`/energy/stats?period=${period}`);
     }
     
     // Device methods
     static async getDevices() {
-        return this.get('/devices');
+        return this.request('/devices');
+    }
+    
+    static async getDevice(id) {
+        return this.request(`/devices/${id}`);
     }
     
     static async addDevice(deviceData) {
-        return this.post('/devices', deviceData);
+        return this.request('/devices', {
+            method: 'POST',
+            body: deviceData
+        });
     }
     
-    static async updateDevice(deviceId, deviceData) {
-        return this.put(`/devices/${deviceId}`, deviceData);
+    static async updateDevice(id, deviceData) {
+        return this.request(`/devices/${id}`, {
+            method: 'PUT',
+            body: deviceData
+        });
     }
     
-    static async deleteDevice(deviceId) {
-        return this.delete(`/devices/${deviceId}`);
+    static async deleteDevice(id) {
+        return this.request(`/devices/${id}`, {
+            method: 'DELETE'
+        });
     }
     
     // Report methods
-    static async generateReport(type, startDate, endDate) {
-        const endpoint = `/reports?type=${type}&start=${startDate.toISOString()}&end=${endDate.toISOString()}`;
-        return this.get(endpoint);
+    static async generateReport(reportData) {
+        return this.request('/reports/generate', {
+            method: 'POST',
+            body: reportData
+        });
     }
     
-    // User methods
-    static async login(credentials) {
-        return this.post('/auth/login', credentials);
+    static async getReports() {
+        return this.request('/reports');
     }
     
-    static async logout() {
-        return this.post('/auth/logout');
+    // User methods (admin only)
+    static async getUsers() {
+        return this.request('/users');
     }
     
-    static async updateProfile(profileData) {
-        return this.put('/user/profile', profileData);
+    static async getUser(id) {
+        return this.request(`/users/${id}`);
+    }
+    
+    static async createUser(userData) {
+        return this.request('/users', {
+            method: 'POST',
+            body: userData
+        });
+    }
+    
+    static async updateUser(id, userData) {
+        return this.request(`/users/${id}`, {
+            method: 'PUT',
+            body: userData
+        });
+    }
+    
+    static async deleteUser(id) {
+        return this.request(`/users/${id}`, {
+            method: 'DELETE'
+        });
     }
 }
+
+// export default ApiService;

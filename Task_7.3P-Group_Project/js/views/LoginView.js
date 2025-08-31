@@ -9,7 +9,6 @@ class LoginView {
         this.messageElement.className = `message ${type}`;
         this.messageElement.style.display = 'block';
         
-        // Hide message after 5 seconds
         setTimeout(() => {
             this.messageElement.style.display = 'none';
         }, 5000);
@@ -30,3 +29,5 @@ class LoginView {
         }
     }
 }
+
+// export default LoginView;

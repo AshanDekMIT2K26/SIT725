@@ -1,3 +1,24 @@
+import StorageService from './services/StorageService.js';
+import ApiService from './services/ApiService.js';
+import User from './models/User.js';
+import EnergyData from './models/EnergyData.js';
+import Device from './models/Device.js';
+import Report from './models/Report.js';
+
+import LoginView from './views/LoginView.js';
+import DashboardView from './views/DashboardView.js';
+import ReportsView from './views/ReportsView.js';
+import DevicesView from './views/DevicesView.js';
+import UsersView from './views/UsersView.js';
+import SettingsView from './views/SettingsView.js';
+
+import AuthController from './controllers/AuthController.js';
+import DataController from './controllers/DataController.js';
+import ReportController from './controllers/ReportController.js';
+import DeviceController from './controllers/DeviceController.js';
+import UserController from './controllers/UserController.js';
+import SettingsController from './controllers/SettingsController.js';
+
 // Main application controller
 class App {
     constructor() {
@@ -7,14 +28,18 @@ class App {
             auth: new AuthController(),
             data: new DataController(),
             report: new ReportController(),
-            device: new DeviceController()
+            device: new DeviceController(),
+            user: new UserController(),
+            settings: new SettingsController()
         };
         
         this.views = {
             login: new LoginView(),
             dashboard: new DashboardView(),
             reports: new ReportsView(),
-            devices: new DevicesView()
+            devices: new DevicesView(),
+            users: new UsersView(),
+            settings: new SettingsView()
         };
         
         this.init();
@@ -74,12 +99,31 @@ class App {
             this.controllers.device.showAddDeviceForm();
         });
         
+        // Add user button
+        document.getElementById('add-user-btn').addEventListener('click', () => {
+            this.controllers.user.showAddUserForm();
+        });
+        
         // Profile form submission
         document.getElementById('profile-form').addEventListener('submit', (e) => {
             e.preventDefault();
             const name = document.getElementById('profile-name').value;
             const email = document.getElementById('profile-email').value;
             this.controllers.auth.updateProfile({ name, email });
+        });
+        
+        // Settings changes
+        document.getElementById('notifications').addEventListener('change', (e) => {
+            this.controllers.settings.updatePreferences();
+        });
+        
+        document.getElementById('dark-mode').addEventListener('change', (e) => {
+            this.controllers.settings.updatePreferences();
+            this.toggleDarkMode(e.target.checked);
+        });
+        
+        document.getElementById('data-refresh').addEventListener('change', (e) => {
+            this.controllers.settings.updatePreferences();
         });
     }
     
@@ -110,6 +154,12 @@ class App {
                 this.updateDashboard();
             } else if (viewName === 'devices') {
                 this.controllers.device.loadDevices();
+            } else if (viewName === 'users') {
+                this.controllers.user.loadUsers();
+            } else if (viewName === 'reports') {
+                this.controllers.report.loadReports();
+            } else if (viewName === 'settings') {
+                this.views.settings.loadUserPreferences(this.user);
             }
         }
         
@@ -209,7 +259,17 @@ class App {
     
     updateUserInfo() {
         if (this.user) {
-            document.getElementById('user-info').textContent = this.user.name;
+            document.getElementById('user-info-text').textContent = this.user.name;
+            document.getElementById('profile-name').value = this.user.name;
+            document.getElementById('profile-email').value = this.user.email;
+        }
+    }
+    
+    toggleDarkMode(enabled) {
+        if (enabled) {
+            document.documentElement.setAttribute('data-theme', 'dark');
+        } else {
+            document.documentElement.removeAttribute('data-theme');
         }
     }
 }

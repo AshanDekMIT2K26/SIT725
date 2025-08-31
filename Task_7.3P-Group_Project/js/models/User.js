@@ -1,6 +1,6 @@
 class User {
     constructor(data) {
-        this.id = data.id || null;
+        this.id = data._id || data.id || null;
         this.username = data.username || '';
         this.name = data.name || '';
         this.email = data.email || '';
@@ -12,8 +12,9 @@ class User {
         };
     }
     
-    updatePreferences(newPreferences) {
-        this.preferences = { ...this.preferences, ...newPreferences };
-        return this.preferences;
+    isAdmin() {
+        return this.role === 'admin';
     }
 }
+
+// export default User;

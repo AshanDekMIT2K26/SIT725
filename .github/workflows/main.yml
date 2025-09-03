@@ -1,0 +1,30 @@
+name: Node tests
+
+on:
+  push:
+    branches: 
+      - main
+      - SIT725-Task-6.2D-Testing
+  pull_request:
+    branches: 
+      - main
+      - SIT725-Task-6.2D-Testing
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run tests
+        run: npm test
